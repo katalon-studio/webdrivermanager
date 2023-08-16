@@ -46,6 +46,7 @@ import static javax.xml.xpath.XPathFactory.newInstance;
 import static org.apache.commons.io.FileUtils.cleanDirectory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 import static org.apache.commons.io.FilenameUtils.separatorsToUnix;
+import static org.apache.commons.lang3.ArrayUtils.addFirst;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 import static org.apache.commons.lang3.SystemUtils.IS_OS_LINUX;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -93,6 +94,7 @@ import javax.xml.xpath.XPath;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -2036,6 +2038,8 @@ public abstract class WebDriverManager {
         String browserForResolving = "chrome|edge|firefox|opera|chromium|iexplorer";
         String browserForNoVnc = "chrome|edge|firefox|opera|safari|chrome-mobile";
         int port = new Config().getServerPort();
+        // Force resolveForBrowser to replicate the CLI behavior from 4.x
+        args = ArrayUtils.addFirst(args, CLI_RESOLVER);
         int numArgs = args.length;
         if (numArgs <= 0) {
             logCliError(browserForResolving, browserForNoVnc, port);

@@ -124,7 +124,7 @@ public class WdmServer {
     }
 
     private void handleRequest(Context ctx) throws IOException {
-        HandlerType requestMethod = ctx.method();
+        String requestMethod = ctx.method();
         String requestPath = ctx.path();
         log.info("Request: {} {}", requestMethod, requestPath);
 
@@ -140,7 +140,7 @@ public class WdmServer {
     }
 
     private void seleniumServer(Context ctx) throws IOException {
-        HandlerType requestMethod = ctx.method();
+        String requestMethod = ctx.method();
         String requestPath = ctx.path().replace(path, "");
         String requestBody = ctx.body();
         log.debug("Body: {} ", requestBody);
@@ -184,7 +184,7 @@ public class WdmServer {
         }
 
         // DELETE /session/sessionId
-        if (requestMethod == DELETE && requestPath.startsWith(SESSION + "/")) {
+        if (requestMethod == "DELETE" && requestPath.startsWith(SESSION + "/")) {
             String sessionIdFromPath = getSessionIdFromPath(requestPath);
             wdmMap.get(sessionIdFromPath).quit();
             wdmMap.remove(sessionIdFromPath);
@@ -260,7 +260,7 @@ public class WdmServer {
         String driverLength = String.valueOf(driver.length());
 
         // Response
-        ctx.res().setHeader("Content-Disposition",
+        ctx.header("Content-Disposition",
                 "attachment; filename=\"" + driverName + "\"");
         ctx.result(openInputStream(driver));
         log.info("Server response: {} {} ({} bytes)", driverName, driverVersion,
@@ -272,7 +272,7 @@ public class WdmServer {
         }
     }
 
-    public String exchange(String url, HandlerType method, String json,
+    public String exchange(String url, String method, String json,
             int timeoutSec) throws IOException {
         String responseContent = null;
         BasicHttpClientConnectionManager connectionManager = new BasicHttpClientConnectionManager();
@@ -283,14 +283,14 @@ public class WdmServer {
                 .create().setConnectionManager(connectionManager).build()) {
             HttpUriRequestBase request = null;
             switch (method) {
-            case GET:
+            case "GET":
                 request = new HttpGet(url);
                 break;
-            case DELETE:
+            case "DELETE":
                 request = new HttpDelete(url);
                 break;
             default:
-            case POST:
+            case "POST":
                 request = new HttpPost(url);
                 HttpEntity body = new StringEntity(json);
                 request.setEntity(body);
